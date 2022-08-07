@@ -255,10 +255,11 @@ class LocalTCP(asyncio.Protocol):
             if dport == 443 and data[0:3] == b'\x16\x03\x01':
                 data_length = len(data)
                 first_part_size = 130
+                ts = 0.17
                 if data_length > first_part_size:
-                    self.remote_tcp.write(data[0:130])
-                    time.sleep(0.17)
-                    self.remote_tcp.write(data[130:data_length])
+                    self.remote_tcp.write(data[0:first_part_size])
+                    time.sleep(ts)
+                    self.remote_tcp.write(data[first_part_size:data_length])
                     return 
             
             self.remote_tcp.write(data)
