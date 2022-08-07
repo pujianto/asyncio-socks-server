@@ -245,6 +245,8 @@ class LocalTCP(asyncio.Protocol):
             error_logger.warning(f"{e} during the negotiation with {self.peername}")
             self.close()
 
+
+
     def data_received(self, data):
         if self.stage == self.STAGE_NEGOTIATE:
             self.stream_reader.feed_data(data)
@@ -252,9 +254,9 @@ class LocalTCP(asyncio.Protocol):
             ip,dport = self.remote_tcp.peername
             if dport == 443 and data[0:3] == b'\x16\x03\x01':
                 data_length = len(data)
-                self.remote_tcp.write(data[0:3])
-                time.sleep(0.2)
-                self.remote_tcp.write(data[3:data_length])
+                self.remote_tcp.write(data[0:95])
+                time.sleep(0.17)
+                self.remote_tcp.write(data[95:data_length])
             else:    
                 self.remote_tcp.write(data)
         elif self.stage == self.STAGE_UDP_ASSOCIATE:
