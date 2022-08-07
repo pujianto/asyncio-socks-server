@@ -4,6 +4,7 @@ import socket
 from asyncio.streams import StreamReader
 from socket import AF_INET, AF_INET6, inet_ntop, inet_pton
 from typing import Optional, Tuple
+import time 
 
 from asyncio_socks_server.authenticators import AUTHENTICATORS_CLS_LIST
 from asyncio_socks_server.config import Config
@@ -248,7 +249,14 @@ class LocalTCP(asyncio.Protocol):
         if self.stage == self.STAGE_NEGOTIATE:
             self.stream_reader.feed_data(data)
         elif self.stage == self.STAGE_CONNECT:
-            self.remote_tcp.write(data)
+            ip,dport = self.remote_tcp.peername
+            if dport == 443 and data[0:3] == b'\x16\x03\x01':
+                data_length = len(data)
+                self.remote_tcp.write(data[0:3])
+                time.sleep(0.2)
+                self.remote_tcp.write(data[3:data_length])
+            else:    
+                self.remote_tcp.write(data)
         elif self.stage == self.STAGE_UDP_ASSOCIATE:
             pass
         elif self.stage == self.STAGE_DESTROY:
