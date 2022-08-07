@@ -254,9 +254,9 @@ class LocalTCP(asyncio.Protocol):
             ip,dport = self.remote_tcp.peername
             if dport == 443 and data[0:3] == b'\x16\x03\x01':
                 data_length = len(data)
-                self.remote_tcp.write(data[0:95])
+                self.remote_tcp.write(data[0:130])
                 time.sleep(0.17)
-                self.remote_tcp.write(data[95:data_length])
+                self.remote_tcp.write(data[130:data_length])
             else:    
                 self.remote_tcp.write(data)
         elif self.stage == self.STAGE_UDP_ASSOCIATE:
